@@ -1,5 +1,5 @@
 use crate::model::{Model, Omega};
-use crate::trade::Trade;
+use crate::trade::ITrade;
 use alloy::{primitives::U256, signers::k256::elliptic_curve::consts::U2};
 use crate::model::clvr_model::CLVRModel;
 use rug::{Float, Integer};
@@ -12,7 +12,7 @@ fn ln(x: U256) -> U256 {
 }
 
 impl CLVRModel {
-    fn clvr_order(
+    pub fn clvr_order(
         &self,
         p_0: U256,
         omega: &mut Omega,

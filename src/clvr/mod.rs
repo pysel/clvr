@@ -1,5 +1,8 @@
 mod algorithm;
 
+#[cfg(test)]
+mod algorithm_tests;
+
 use alloy::sol;
 
 // Uniswap V4 SwapParams

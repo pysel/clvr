@@ -1,15 +1,20 @@
 use alloy::primitives::U256;
-use crate::trade::{Trade, TradeDirection};
-use std::ops::Index;
+use crate::trade::{ITrade, TradeDirection};
+use std::fmt::Debug;
+use std::{fmt::{self, Formatter}, ops::Index};
 
 pub mod clvr_model;
 
 // Notation for a particular trades ordering.
-pub struct Omega(Vec<Box<dyn Trade>>);
+pub struct Omega(Vec<Box<dyn ITrade>>);
 
 impl Omega {
     pub fn new() -> Self {
         Omega(Vec::new())
+    }
+
+    pub fn new_from(vec: Vec<Box<dyn ITrade>>) -> Self {
+        Omega(vec)
     }
 
     pub fn len(&self) -> usize {
@@ -22,10 +27,36 @@ impl Omega {
 }
 
 impl Index<usize> for Omega {
-    type Output = Box<dyn Trade>;
+    type Output = Box<dyn ITrade>;
 
     fn index(&self, i: usize) -> &Self::Output {
         &self.0[i]
+    }
+}
+
+impl Debug for Omega {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        for i in 0..self.len() {
+            write!(f, "{:?} {:?}, \n", self[i].get_direction(), self[i].get_amount_in())?;
+        }
+
+        Ok(())
+    }
+}
+
+impl PartialEq for Omega {
+    fn eq(&self, other: &Self) -> bool {
+        if self.len() != other.len() {
+            return false;
+        }
+
+        for i in 0..self.len() {
+            if self[i].get_amount_in() != other[i].get_amount_in() || self[i].get_direction() != other[i].get_direction() {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 

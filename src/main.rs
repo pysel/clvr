@@ -1,6 +1,6 @@
 mod clvr;
-mod trade;
 mod model;
+mod trade;
 
 fn main() {
     println!("Hello, world!");
