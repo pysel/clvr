@@ -2,7 +2,7 @@ use alloy::primitives::U256;
 
 pub mod implementation;
 
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Clone, Debug)]
 pub enum TradeDirection {
     Buy,
     Sell

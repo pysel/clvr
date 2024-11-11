@@ -23,7 +23,7 @@ impl Omega {
     }
 
     pub fn swap(&mut self, index1: usize, index2: usize) {
-        self.0.swap(index1, index2);
+        self.0.swap(index1 - 1, index2 - 1); // 1-indexed
     }
 }
 

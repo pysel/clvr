@@ -1,14 +1,25 @@
 use crate::model::{Model, Omega};
 use crate::trade::ITrade;
+use alloy::sol_types::sol_data::Int;
 use alloy::{primitives::U256, signers::k256::elliptic_curve::consts::U2};
+use rug::ops::Pow;
 use crate::model::clvr_model::CLVRModel;
 use rug::{Float, Integer};
+use once_cell::sync::Lazy;
 
-fn ln(x: U256) -> U256 {
-    let int = Integer::from_str_radix(&x.to_string(), 10).expect("Failed to convert U256 to Integer");
-    let ln_res = Float::with_val(256, &int).ln();
+const LOG_E_WEI_STR: &str = "42446531673892822312";
+// const WEI: &str = "000000000000000000";
+// const LOG_E_WEI: Lazy<U256> = Lazy::new(|| U256::from_str_radix(LOG_E_WEI_STR, 10).expect("Failed to convert string to U256"));
+const BASE: Lazy<U256> = Lazy::new(|| U256::from_str_radix("10000000000000000000", 10).unwrap());
 
-    U256::from_str_radix(&ln_res.to_string(), 10).expect("Failed to convert Float to U256")
+// NOTE: actually computes log_{e * 10 ** 18}{x} so that the result is accurate for a wei representation of a number
+// A property used is log_a(x) = log_b(x) / log_b(a)
+fn ln(x: U256) -> Float {
+    let x_int = Integer::from_str_radix(&x.to_string(), 10).expect("Failed to convert U256 to Integer");
+    let x_float: Float = Float::with_val(256, &x_int) * Float::with_val(18, &10).pow(-18);
+    let ln_x = x_float.ln();
+
+    ln_x
 }
 
 impl CLVRModel {
@@ -19,16 +30,17 @@ impl CLVRModel {
     ) {
         let size = omega.len();
         let ln_p0 = ln(p_0);
-        let two = U256::from(2);
+        let two = Float::with_val(18, &2);
         
         // think of this as a selection sort algorithm
-        for t in 0..size {
+        // iterating through 1 to size+1 because omega is 1-indexed
+        for t in 1..size+1 {
             // select t'th trade by minimizing ( ln(p_0) - ln(P(o, t)) )^2
             let mut candidate_index = t;
-            let mut candidate_value = (ln_p0 - ln(self.P(omega, t))).pow(two);
-    
-            for i in t..size {
-                let value = (ln_p0 - ln(self.P(omega, i))).pow(two);
+            let mut candidate_value = (ln_p0.clone() - ln(self.P(omega, t))).pow(two.clone());
+
+            for i in t+1..size+1 {
+                let value = (ln_p0.clone() - ln(self.P(omega, i))).pow(two.clone());
     
                 if value < candidate_value {
                     candidate_index = i;
@@ -36,7 +48,9 @@ impl CLVRModel {
                 }
             }
 
-            omega.swap(t, candidate_index);
+            if t != candidate_index {
+                omega.swap(t, candidate_index);
+            }
         }
     }
 }
