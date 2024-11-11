@@ -1,6 +1,6 @@
-use alloy::primitives::U256;
-use crate::trade_types::TradeDirection;
 use crate::model::{Model, Omega};
+use crate::trade_types::TradeDirection;
+use alloy::primitives::U256;
 
 pub struct CLVRModel {
     reserve_x: U256,
@@ -37,22 +37,22 @@ impl Model for CLVRModel {
 
     fn Y(&self, o: &Omega, i: usize) -> U256 {
         if i == 0 {
-            return self.reserve_y
+            return self.reserve_y;
         } else if i > 0 && o[i].get_direction() == TradeDirection::Buy {
-            return self.Y(o, i - 1) + o[i].get_amount_in()
+            return self.Y(o, i - 1) + o[i].get_amount_in();
         } else if i > 0 && o[i].get_direction() == TradeDirection::Sell {
-            return self.Y(o, i - 1) - self.y_out(o, i)
+            return self.Y(o, i - 1) - self.y_out(o, i);
         }
         panic!("Invalid call to Y");
     }
-    
+
     fn X(&self, o: &Omega, i: usize) -> U256 {
         if i == 0 {
-            return self.reserve_x
+            return self.reserve_x;
         } else if i > 0 && o[i].get_direction() == TradeDirection::Sell {
-            return self.X(o, i - 1) + o[i].get_amount_in()
+            return self.X(o, i - 1) + o[i].get_amount_in();
         } else if i > 0 && o[i].get_direction() == TradeDirection::Buy {
-            return self.X(o, i - 1) - self.x_out(o, i)
+            return self.X(o, i - 1) - self.x_out(o, i);
         }
         panic!("Invalid call to X");
     }

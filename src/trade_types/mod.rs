@@ -5,7 +5,7 @@ pub mod implementation;
 #[derive(PartialEq, Clone, Debug)]
 pub enum TradeDirection {
     Buy,
-    Sell
+    Sell,
 }
 
 pub trait ITrade {

@@ -1,13 +1,13 @@
 use crate::model::clvr_model::CLVRModel;
 use crate::trade_types::implementation::Trade;
-use crate::trade_types::{ITrade, TradeDirection};
+use crate::trade_types::TradeDirection;
 use alloy::primitives::U256;
 
 #[cfg(test)]
 mod tests {
-    use std::ptr::null;
+    
 
-    use alloy::hex::NIL;
+    
 
     use crate::model::Omega;
 
@@ -51,7 +51,7 @@ mod tests {
             Box::new(Trade::new(size(5), TradeDirection::Sell)),
             Box::new(Trade::new(size(10), TradeDirection::Buy)),
         ]);
-        
+
         let model = CLVRModel::new(size(100), size(100));
 
         let p_0 = U256::from(size(1));

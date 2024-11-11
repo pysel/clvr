@@ -1,7 +1,10 @@
-use alloy::primitives::U256;
 use crate::trade_types::ITrade;
+use alloy::primitives::U256;
 use std::fmt::Debug;
-use std::{fmt::{self, Formatter}, ops::Index};
+use std::{
+    fmt::{self, Formatter},
+    ops::Index,
+};
 
 pub mod clvr_model;
 
@@ -38,8 +41,13 @@ impl Index<usize> for Omega {
 
 impl Debug for Omega {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        for i in 1..self.len()+1 {
-            write!(f, "{:?} {:?}, \n", self[i].get_direction(), self[i].get_amount_in())?;
+        for i in 1..self.len() + 1 {
+            write!(
+                f,
+                "{:?} {:?}, \n",
+                self[i].get_direction(),
+                self[i].get_amount_in()
+            )?;
         }
 
         Ok(())
@@ -52,8 +60,10 @@ impl PartialEq for Omega {
             return false;
         }
 
-        for i in 1..self.len()+1 {
-            if self[i].get_amount_in() != other[i].get_amount_in() || self[i].get_direction() != other[i].get_direction() {
+        for i in 1..self.len() + 1 {
+            if self[i].get_amount_in() != other[i].get_amount_in()
+                || self[i].get_direction() != other[i].get_direction()
+            {
                 return false;
             }
         }
