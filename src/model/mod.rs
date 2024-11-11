@@ -6,6 +6,7 @@ use std::{fmt::{self, Formatter}, ops::Index};
 pub mod clvr_model;
 
 // Notation for a particular trades ordering.
+// NOTE: Omega is 1-indexed
 pub struct Omega(Vec<Box<dyn ITrade>>);
 
 impl Omega {
@@ -29,14 +30,15 @@ impl Omega {
 impl Index<usize> for Omega {
     type Output = Box<dyn ITrade>;
 
+    // 1-indexed
     fn index(&self, i: usize) -> &Self::Output {
-        &self.0[i]
+        &self.0[i - 1]
     }
 }
 
 impl Debug for Omega {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        for i in 0..self.len() {
+        for i in 1..self.len()+1 {
             write!(f, "{:?} {:?}, \n", self[i].get_direction(), self[i].get_amount_in())?;
         }
 
@@ -50,7 +52,7 @@ impl PartialEq for Omega {
             return false;
         }
 
-        for i in 0..self.len() {
+        for i in 1..self.len()+1 {
             if self[i].get_amount_in() != other[i].get_amount_in() || self[i].get_direction() != other[i].get_direction() {
                 return false;
             }

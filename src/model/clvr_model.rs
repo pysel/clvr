@@ -58,6 +58,8 @@ impl Model for CLVRModel {
     }
 
     fn P(&self, o: &Omega, i: usize) -> U256 {
-        self.Y(o, i) / self.X(o, i)
+        let base = U256::from_str_radix("1000000000000000000", 10).unwrap();
+        println!("Y: {}, X: {}, Y/X: {}", self.Y(o, i), self.X(o, i), self.Y(o, i) * base / self.X(o, i));
+        self.Y(o, i) * base / self.X(o, i)
     }
 }
