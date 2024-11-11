@@ -2,7 +2,7 @@ use alloy::primitives::U256;
 use crate::trade::TradeDirection;
 use crate::model::{Model, Omega};
 
-struct CLVRModel {
+pub struct CLVRModel {
     reserve_x: U256,
     reserve_y: U256,
 }
