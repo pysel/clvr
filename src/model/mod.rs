@@ -1,5 +1,5 @@
 use alloy::primitives::U256;
-use crate::trade::{ITrade, TradeDirection};
+use crate::trade_types::ITrade;
 use std::fmt::Debug;
 use std::{fmt::{self, Formatter}, ops::Index};
 

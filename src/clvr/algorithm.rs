@@ -1,5 +1,5 @@
 use crate::model::{Model, Omega};
-use crate::trade::ITrade;
+use crate::trade_types::ITrade;
 use alloy::sol_types::sol_data::Int;
 use alloy::{primitives::U256, signers::k256::elliptic_curve::consts::U2};
 use rug::ops::Pow;
@@ -31,7 +31,7 @@ impl CLVRModel {
         let size = omega.len();
         let ln_p0 = ln(p_0);
         let two = Float::with_val(18, &2);
-        
+
         // think of this as a selection sort algorithm
         // iterating through 1 to size+1 because omega is 1-indexed
         for t in 1..size+1 {
@@ -39,17 +39,21 @@ impl CLVRModel {
             let mut candidate_index = t;
             let mut candidate_value = (ln_p0.clone() - ln(self.P(omega, t))).pow(two.clone());
 
-            for i in t+1..size+1 {
-                let value = (ln_p0.clone() - ln(self.P(omega, i))).pow(two.clone());
+            for i in t+1..size+1 { // try each trade at position t
+                omega.swap(t, i); // simulate that trade i is at position t
+
+                let value = (ln_p0.clone() - ln(self.P(omega, t))).pow(two.clone()); // compute the value for this omega
     
                 if value < candidate_value {
                     candidate_index = i;
                     candidate_value = value;
                 }
+
+                omega.swap(i, t); // swap back to preserve original state
             }
 
-            if t != candidate_index {
-                omega.swap(t, candidate_index);
+            if t != candidate_index { // if omega exists with a better value, swap to that omega
+                omega.swap(candidate_index, t);
             }
         }
     }

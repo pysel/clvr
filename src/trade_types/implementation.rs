@@ -1,6 +1,7 @@
 use alloy::primitives::U256;
-use crate::trade::{TradeDirection, ITrade};
+use crate::trade_types::{TradeDirection, ITrade};
 
+#[derive(PartialEq, Debug)]
 pub struct Trade {
     amount_in: U256,
     direction: TradeDirection,
