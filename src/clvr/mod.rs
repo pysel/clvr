@@ -1,5 +1,5 @@
 mod algorithm;
-mod model;
+pub mod model;
 
 #[cfg(test)]
 mod algorithm_tests;

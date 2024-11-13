@@ -8,11 +8,16 @@ pub struct CLVRModel {
 }
 
 impl CLVRModel {
-    pub fn new(reserve_x: U256, reserve_y: U256) -> Self {
+    pub fn new() -> Self {
         CLVRModel {
-            reserve_x,
-            reserve_y,
+            reserve_x: U256::from(0),
+            reserve_y: U256::from(0),
         }
+    }
+
+    pub fn set_reserves(&mut self, reserve_x: U256, reserve_y: U256) {
+        self.reserve_x = reserve_x;
+        self.reserve_y = reserve_y;
     }
 }
 

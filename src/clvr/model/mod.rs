@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use crate::trades::ITrade;
 use alloy::primitives::U256;
 use std::fmt::Debug;
@@ -17,6 +19,7 @@ impl Omega {
         Omega(Vec::new())
     }
 
+    #[cfg(test)]
     pub fn new_from(vec: Vec<Box<dyn ITrade>>) -> Self {
         Omega(vec)
     }
@@ -27,6 +30,10 @@ impl Omega {
 
     pub fn swap(&mut self, index1: usize, index2: usize) {
         self.0.swap(index1 - 1, index2 - 1); // 1-indexed
+    }
+
+    pub fn push(&mut self, trade: Box<dyn ITrade>) {
+        self.0.push(trade);
     }
 }
 

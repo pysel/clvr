@@ -48,7 +48,8 @@ mod tests {
             Box::new(Trade::new(size(10), TradeDirection::Buy)),
         ]);
 
-        let model = CLVRModel::new(size(100), size(100));
+        let mut model = CLVRModel::new();
+        model.set_reserves(size(100), size(100));
 
         let p_0 = U256::from(size(1));
         for mut test_case in test_cases {

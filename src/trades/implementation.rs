@@ -1,7 +1,8 @@
 use crate::trades::{ITrade, TradeDirection};
 use alloy::primitives::U256;
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Deserialize, Serialize)]
 pub struct Trade {
     amount_in: U256,
     direction: TradeDirection,

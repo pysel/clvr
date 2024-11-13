@@ -1,8 +1,9 @@
 use alloy::primitives::U256;
+use serde::{Serialize, Deserialize};
 
 pub mod implementation;
 
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Clone, Debug, Serialize, Deserialize)]
 pub enum TradeDirection {
     Buy,
     Sell,
