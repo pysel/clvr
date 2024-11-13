@@ -1,4 +1,4 @@
-use crate::trade_types::{ITrade, TradeDirection};
+use crate::trades::{ITrade, TradeDirection};
 use alloy::primitives::U256;
 
 #[derive(PartialEq, Debug)]

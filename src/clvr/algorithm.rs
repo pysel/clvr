@@ -1,5 +1,5 @@
-use crate::model::clvr_model::CLVRModel;
-use crate::model::{Model, Omega};
+use crate::clvr::model::clvr_model::CLVRModel;
+use crate::clvr::model::{Model, Omega};
 use alloy::primitives::U256;
 use rug::ops::Pow;
 use rug::{Float, Integer};

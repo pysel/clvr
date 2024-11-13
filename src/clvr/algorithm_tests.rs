@@ -1,15 +1,11 @@
-use crate::model::clvr_model::CLVRModel;
-use crate::trade_types::implementation::Trade;
-use crate::trade_types::TradeDirection;
+use crate::clvr::model::clvr_model::CLVRModel;
+use crate::trades::implementation::Trade;
+use crate::trades::TradeDirection;
 use alloy::primitives::U256;
 
 #[cfg(test)]
 mod tests {
-    
-
-    
-
-    use crate::model::Omega;
+    use crate::clvr::model::Omega;
 
     use super::*;
 

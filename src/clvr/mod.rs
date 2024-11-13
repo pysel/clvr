@@ -1,4 +1,5 @@
 mod algorithm;
+mod model;
 
 #[cfg(test)]
 mod algorithm_tests;

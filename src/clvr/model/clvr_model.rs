@@ -1,5 +1,5 @@
-use crate::model::{Model, Omega};
-use crate::trade_types::TradeDirection;
+use crate::clvr::model::{Model, Omega};
+use crate::trades::TradeDirection;
 use alloy::primitives::U256;
 
 pub struct CLVRModel {

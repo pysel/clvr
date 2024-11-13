@@ -1,4 +1,4 @@
-use crate::trade_types::ITrade;
+use crate::trades::ITrade;
 use alloy::primitives::U256;
 use std::fmt::Debug;
 use std::{
