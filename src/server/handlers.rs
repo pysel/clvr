@@ -2,40 +2,19 @@ use std::{str::FromStr, sync::{Arc, Mutex}};
 
 use actix_web::{get, post, web, HttpResponse, Responder};
 use alloy::primitives::{Address, FixedBytes, PrimitiveSignature, U256};
-use serde::{Deserialize, Serialize};
 use log::{info, warn};
+use crate::server::handlers_types::*;
 
-use crate::server::{eip2612::verify_eip2612_signature, swap_router_v3::ISwapRouter::ExactInputSingleParams};
+use crate::server::{eip2612::verify_eip2612_signature};
 
-pub type ScheduledDatabase = Arc<Mutex<Vec<ScheduleRequest>>>;
-
-#[derive(Serialize, Deserialize)]
-pub struct ScheduleRequest {
-    from: String,
-    /*
-    swap_params
-    struct ExactInputSingleParams {
-        address tokenIn;
-        address tokenOut;
-        uint24 fee;
-        address recipient;
-        uint256 deadline;
-        uint256 amountIn;
-        uint256 amountOutMinimum;
-        uint160 sqrtPriceLimitX96;
-    }
-
-    encoded as a json string
-     */
-    swap_params: String, 
-    permit_msg: String,
-    signature: String,
-}
+pub type ScheduledDatabase = Arc<Mutex<Vec<ScheduledTrade>>>;
 
 #[get("/num_trades")]
-pub async fn num_trades() -> impl Responder {
+pub async fn num_trades(db: web::Data<ScheduledDatabase>) -> impl Responder {
     info!(target: "server::handlers", "num_trades called");
-    format!("Hi")
+    HttpResponse::Ok().json(NumTradesResponse {
+        num_trades: db.lock().unwrap().len() as u64,
+    })
 }
 
 #[post("/submit_trade")]
@@ -62,8 +41,12 @@ pub async fn submit_trade(trade_request: web::Json<ScheduleRequest>, db: web::Da
         warn!(target: "server::handlers", "Invalid signature");
         return HttpResponse::BadRequest().body("Invalid signature");
     }
+    
+    let scheduled_trade: ScheduledTrade = trade_request.into_inner().into();
+    db.push(scheduled_trade);
 
-    db.push(trade_request.into_inner());
-
-    HttpResponse::Ok().body("Trade submitted")
+    HttpResponse::Created().json(ScheduleResponse {
+        success: true,
+        message: "Trade submitted".to_string(),
+    })
 }

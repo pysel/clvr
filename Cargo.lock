@@ -1269,6 +1269,7 @@ dependencies = [
  "once_cell",
  "rug",
  "serde",
+ "serde_json",
  "tokio",
  "warp",
 ]

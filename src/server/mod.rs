@@ -8,6 +8,7 @@ use crate::trades::ITrade;
 
 mod swap_router_v3;
 pub mod handlers;
+mod handlers_types;
 mod eip2612;
 
 #[cfg(test)]

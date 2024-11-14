@@ -1,11 +1,7 @@
 use std::{fs, sync::{Arc, Mutex}};
 
 use actix_web::{web, App, HttpServer};
-use serde::{Serialize, Deserialize};
-use server::handlers::ScheduleRequest;
-use log::info;
 use log4rs;
-use tokio::signal;
 
 mod clvr;
 mod trades;
