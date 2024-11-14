@@ -18,15 +18,19 @@ pub async fn num_trades(db: web::Data<ScheduledDatabase>) -> impl Responder {
 }
 
 #[post("/submit_trade")]
-pub async fn submit_trade(trade_request: web::Json<ScheduleRequest>, db: web::Data<ScheduledDatabase>) -> impl Responder {
+pub async fn submit_trade(trade_request: web::Json<ScheduleRequest>, db: web::Data<ScheduledDatabase>,) -> impl Responder {
     info!(target: "server::handlers", "submit_trade called");
+
     let mut db = db.lock().unwrap();
 
     // verify from address
     let from = Address::from_str(&trade_request.from).unwrap_or(Address::ZERO);
     if from == Address::ZERO {
         warn!(target: "server::handlers", "Invalid from address");
-        return HttpResponse::BadRequest().body("Invalid from address");
+        return HttpResponse::BadRequest().json(ScheduleResponse {
+            success: false,
+            message: "Invalid from address".to_string(),
+        });
     }
     
     // verify signature (return default types except panicking so that verification fails gracefully)
@@ -39,7 +43,10 @@ pub async fn submit_trade(trade_request: web::Json<ScheduleRequest>, db: web::Da
     
     if !verify_eip2612_signature(permit_message, signature, signer) {
         warn!(target: "server::handlers", "Invalid signature");
-        return HttpResponse::BadRequest().body("Invalid signature");
+        return HttpResponse::BadRequest().json(ScheduleResponse {
+            success: false,
+            message: "Invalid signature".to_string(),
+        });
     }
     
     let scheduled_trade: ScheduledTrade = trade_request.into_inner().into();
