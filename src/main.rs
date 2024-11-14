@@ -34,6 +34,7 @@ async fn main() -> Result<(), std::io::Error> {
         App::new()
             .app_data(app_data)
             .service(server::handlers::num_trades)
+            .service(server::handlers::submit_trade)
     })
     .bind(("127.0.0.1", 8080))?
     .workers(2)
