@@ -1,14 +1,25 @@
 use alloy::{contract::Error, network::Ethereum, primitives::{Address, U256}, providers::{Provider, ProviderBuilder, RootProvider}, transports::{http::{Client, Http}, BoxTransport}};
 use alloy::transports::Transport;
 use swap_router_v3::{SwapRouterV3, ISwapRouter};
+use crate::clvr::model::{clvr_model::CLVRModel, Omega};
+
+use crate::trades::ITrade;
 
 mod swap_router_v3;
+mod handlers;
+mod eip2612;
+
+#[cfg(test)]
+mod eip2612_tests;
 
 type DefaultTransport = Http<Client>;
 
 struct Server {
-    provider: RootProvider<DefaultTransport>,
-    swap_router_v3: SwapRouterV3::SwapRouterV3Instance<DefaultTransport, RootProvider<DefaultTransport>>,
+    omega: Omega,
+    model: CLVRModel,
+
+    // provider: RootProvider<DefaultTransport>,
+    // swap_router_v3: SwapRouterV3::SwapRouterV3Instance<DefaultTransport, RootProvider<DefaultTransport>>,
 }
 
 impl Server {
@@ -20,9 +31,15 @@ impl Server {
         let swap_router_contract = SwapRouterV3::new(swap_router_address, provider.clone());
 
         Self {
-            provider: provider,
-            swap_router_v3: swap_router_contract,
+            omega: Omega::new(),
+            model: CLVRModel::new(),
+            // provider: provider,
+            // swap_router_v3: swap_router_contract,
         }
+    }
+
+    fn add_trade(&mut self, trade: Box<dyn ITrade>) {
+        self.omega.push(trade);
     }
 
     fn create_provider() -> RootProvider<DefaultTransport> {
