@@ -1,4 +1,6 @@
-use alloy::primitives::{aliases::B32, keccak256, Address, FixedBytes, PrimitiveSignature, B256, U256};
+use alloy::primitives::{Address, FixedBytes, PrimitiveSignature};
+use alloy::primitives::{keccak256, B256, U256};
+
 
 const CONSTANT_LEADING_BYTES: &[u8] = &[0x19, 0x01];
 
@@ -19,14 +21,21 @@ fn generate_domain_separator(
     keccak256(&[domain_typehash, name_hash, version_hash, chain_id_bytes, contract_bytes].concat())
 }
 
-
-
 pub fn verify_eip2612_signature(
-    permit_message: FixedBytes<32>, // The permit message to verify
-    signature: PrimitiveSignature,      // The signature to verify
-    signer: Address,      // The public key of the signer
+    permit_message: FixedBytes<32>,
+    signature: PrimitiveSignature,
+    signer: Address,
 ) -> bool {
     let recovered_address = signature.recover_address_from_msg(permit_message).unwrap();
 
     recovered_address == signer
+}
+
+pub fn get_permit_signature_fields(
+    signature: PrimitiveSignature,
+) -> (u8, [u8; 32], [u8; 32]) {
+    let r: FixedBytes<32> = signature.r().into();
+    let s: FixedBytes<32> = signature.s().into();
+
+    (signature.v().into(), r.0, s.0)
 }

@@ -1,12 +1,13 @@
-use alloy::{contract::Error, network::Ethereum, primitives::{Address, U256}, providers::{Provider, ProviderBuilder, RootProvider}, transports::{http::{Client, Http}, BoxTransport}};
-use alloy::transports::Transport;
-use swap_router_v3::{SwapRouterV3, ISwapRouter};
-use crate::clvr::model::{clvr_model::CLVRModel, Omega};
+use std::{net::TcpListener, sync::{Arc, Mutex}};
 
+use alloy::{primitives::Address, providers::{ProviderBuilder, RootProvider}, transports::http::{Client, Http}};
+use swap_router_v3::SwapRouterV3;
+use crate::clvr::model::{clvr_model::CLVRModel, Omega};
+use actix_web::{App};
 use crate::trades::ITrade;
 
 mod swap_router_v3;
-mod handlers;
+pub mod handlers;
 mod eip2612;
 
 #[cfg(test)]
@@ -14,7 +15,7 @@ mod eip2612_tests;
 
 type DefaultTransport = Http<Client>;
 
-struct Server {
+pub struct Processor {
     omega: Omega,
     model: CLVRModel,
 
@@ -22,17 +23,26 @@ struct Server {
     // swap_router_v3: SwapRouterV3::SwapRouterV3Instance<DefaultTransport, RootProvider<DefaultTransport>>,
 }
 
-impl Server {
-    fn new() -> Self {
+impl Processor {
+    pub fn new() -> Self {
+        // create variables related to the algorithm
+        let omega = Omega::new();
+        let model = CLVRModel::new();
+
+        // create a provider to post requests to the ethereum network
         let provider = Self::create_provider();
 
+        // create an instance of the swap router contract
         let swap_router_address_str = std::env::var("SWAP_ROUTER_ADDRESS").expect("SWAP_ROUTER_ADDRESS must be set");
         let swap_router_address: Address = swap_router_address_str.parse().expect("SWAP_ROUTER_ADDRESS must be a valid address");
         let swap_router_contract = SwapRouterV3::new(swap_router_address, provider.clone());
 
+        // create a listener
+        let listener = TcpListener::bind("127.0.0.1:8080").expect("Failed to bind to port 8080");
+
         Self {
-            omega: Omega::new(),
-            model: CLVRModel::new(),
+            omega,
+            model,
             // provider: provider,
             // swap_router_v3: swap_router_contract,
         }
@@ -49,4 +59,18 @@ impl Server {
 
         provider
     }
+
+    // pub async fn run_http_server(&self) -> std::io::Result<()> {
+    //     let scheduled_db: ScheduledDatabase = Arc::new(Mutex::new(Vec::new()));
+        
+    //     HttpProcessor::new(|| {
+    //         App::new()
+    //             .service(num_trades)
+    //     })
+    //     .bind(("127.0.0.1", 8080))?
+    //     .workers(2)
+    //     .run()
+    //     .await
+    // }
+
 }

@@ -1,18 +1,28 @@
-use alloy::primitives::U256;
-use clvr::model::Omega;
-use trades::{implementation::Trade, TradeDirection};
+use std::sync::{Arc, Mutex};
+
+use actix_web::{web, App, HttpServer};
+use serde::{Serialize, Deserialize};
+use server::handlers::ScheduleRequest;
 
 mod clvr;
 mod trades;
 mod server;
 
-fn main() {
-    let mut model = clvr::model::clvr_model::CLVRModel::new();
-    model.set_reserves(U256::from(0), U256::from(0));
+#[actix_web::main]
+async fn main() -> Result<(), std::io::Error> {
+    dotenv::dotenv().ok();
 
-    let mut omega = Omega::new();
-    omega.push(Box::new(Trade::new(U256::from(100), TradeDirection::Buy)));
-    omega.push(Box::new(Trade::new(U256::from(100), TradeDirection::Sell)));
-    
-    model.clvr_order(U256::from(100), &mut omega);
+    let server = server::Processor::new();
+    let scheduled_db: server::handlers::ScheduledDatabase = Arc::new(Mutex::new(Vec::new()));
+        
+    HttpServer::new(move || {
+        let app_data = web::Data::new(scheduled_db.clone());
+        App::new()
+            .app_data(app_data)
+            .service(server::handlers::num_trades)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .workers(2)
+    .run()
+    .await
 }
