@@ -4,7 +4,7 @@ use actix_web::{get, post, web, HttpResponse, Responder};
 use alloy::primitives::{Address, FixedBytes, PrimitiveSignature, U256};
 use serde::{Deserialize, Serialize};
 
-use crate::server::eip2612::verify_eip2612_signature;
+use crate::server::{eip2612::verify_eip2612_signature, swap_router_v3::ISwapRouter::ExactInputSingleParams};
 
 
 pub type ScheduledDatabase = Arc<Mutex<Vec<ScheduleRequest>>>;
@@ -40,6 +40,12 @@ pub async fn num_trades() -> impl Responder {
 #[post("/submit_trade")]
 pub async fn submit_trade(trade_request: web::Json<ScheduleRequest>, db: web::Data<ScheduledDatabase>) -> impl Responder {
     let mut db = db.lock().unwrap();
+
+    // verify from address
+    let from = Address::from_str(&trade_request.from).unwrap_or(Address::ZERO);
+    if from == Address::ZERO {
+        return HttpResponse::BadRequest().body("Invalid from address");
+    }
     
     // verify signature (return default types except panicking so that verification fails gracefully)
     let permit_message: FixedBytes<32> = FixedBytes::from_str(&trade_request.permit_msg)
@@ -54,5 +60,6 @@ pub async fn submit_trade(trade_request: web::Json<ScheduleRequest>, db: web::Da
     }
 
     db.push(trade_request.into_inner());
+    
     HttpResponse::Ok().body("Trade submitted")
 }
