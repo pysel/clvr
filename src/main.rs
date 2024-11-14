@@ -1,20 +1,38 @@
-use std::sync::{Arc, Mutex};
+use std::{fs, sync::{Arc, Mutex}};
 
 use actix_web::{web, App, HttpServer};
 use serde::{Serialize, Deserialize};
 use server::handlers::ScheduleRequest;
+use log::info;
+use log4rs;
+use tokio::signal;
 
 mod clvr;
 mod trades;
-mod server;
+pub mod server;
+
+async fn cleanup() {
+    let log_dir = "log"; // Specify your log directory here
+    if let Err(e) = fs::remove_dir_all(log_dir) {
+        eprintln!("Error removing log directory: {}", e);
+    } else {
+        println!("Log directory removed successfully.");
+    }
+}
 
 #[actix_web::main]
 async fn main() -> Result<(), std::io::Error> {
+    // load environment variables
     dotenv::dotenv().ok();
 
-    let server = server::Processor::new();
+    // init logging
+    cleanup().await; // cleanup existing log files before starting
+    if let Err(e) = log4rs::init_file("log4rs.yml", Default::default()) {
+        eprintln!("Error initializing logging: {}", e);
+    }
+
     let scheduled_db: server::handlers::ScheduledDatabase = Arc::new(Mutex::new(Vec::new()));
-        
+
     HttpServer::new(move || {
         let app_data = web::Data::new(scheduled_db.clone());
         App::new()
