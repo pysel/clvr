@@ -1,0 +1,6 @@
+[submodule "clvr-api"]
+	path = clvr-api
+	url = https://github.com/pysel/clvr-api
+[submodule "clvr-contracts"]
+	path = clvr-contracts
+	url = https://github.com/pysel/clvr-contracts
