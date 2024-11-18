@@ -1,5 +1,5 @@
 .PHONY: subdate
 
 subdate:
-	git submodule update --init --recursive
-	git submodule update --remote
+	git commit -am "Update submodules"
+	git push
