@@ -5,4 +5,4 @@ This is a monorepo for the CLVR protocol. It contains the functionality to spin 
 ## Submodules
 
 - [clvr-contracts](https://github.com/pysel/clvr-contracts): The core contracts of the CLVR protocol.
-- [clvr-api](https://github.com/pysel/clvr-api): The API for the CLVR protocol.
+- [clvr-api](https://github.com/pysel/clvr-api): CLVR ordering server.
